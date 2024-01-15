@@ -3,8 +3,11 @@ const mongoose=require('mongoose');
 const psotSchema=mongoose.Schema({
     title:String,
     body:String,
-    device:String,
-    no_of_comment:String,
+    device:{type:String,
+        enum:["Laptop","Tablet","Mobile"],
+
+    },
+    no_of_comment:Number,
     userID:String,
      name:String
 },{
