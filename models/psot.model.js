@@ -1,21 +1,18 @@
 const mongoose=require('mongoose');
 
-const psotSchema=mongoose.Schema({
-    title:String,
-    body:String,
-    device:{type:String,
-        enum:["Laptop","Tablet","Mobile"],
-
-    },
-    no_of_comment:Number,
-    userID:String,
-     name:String
+const postSchema=mongoose.Schema({
+    title:{type:String},
+    body:{type:String},
+    device:{type:String,required:true},
+    no_of_comments:{type:Number,required:true},
+    userID:{type:String},
+    name:{type:String}
 },{
     versionKey:false
 })
 
 
-const PostModel=mongoose.model("user",psotSchema);
+const PostModel=mongoose.model("post",postSchema);
 
 module.exports={
     PostModel,

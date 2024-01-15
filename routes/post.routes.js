@@ -4,9 +4,14 @@ const {PostModel}=require('../models/psot.model');
 
 postRouter=express.Router();
 
+postRouter.use(auth);
+
+
+
+
 postRouter.post('/add',async(req,res)=>{
     try{
-        const psot=new PostModel(req.body);
+        const post=new PostModel(req.body);
         await post.save();
         res.status(200).json({msg:"new post added"});
     }
@@ -14,6 +19,10 @@ postRouter.post('/add',async(req,res)=>{
         res.status(400).json({msg:"new post added"})
     }
 })
+
+
+
+
 
 
 

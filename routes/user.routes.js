@@ -1,8 +1,8 @@
 const express=require('express');
 
 const {UserModel}=require('../models/user.model');
-const bcrypt=require('bcrypt');
-const jwt=require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const {BlackListModel}=require('../models/blacklist.model')
 
 const userRouter=express.Router();
@@ -13,7 +13,7 @@ userRouter.post('/register',async(req,res)=>{
     const {name,email,pass,gender,age,city}=req.body;
 
     try{
-        const user=await UserModel.findOne({email:email});
+        const user=await UserModel.findOne({email});
         console.log(user);
          console.log(email);
        if(user){
@@ -37,40 +37,46 @@ userRouter.post('/register',async(req,res)=>{
 
 
 //login
-userRouter.post('/login',async(req,res)=>{
-    const {email,pass}=req.body;
-    try{
-        const user=await UserModel.findOne({email});
-          if(user){
-            bcrypt.compare(pass,user.pass,(_err,result)=>{
-                if(result){
-                    const access_token=jwt.sign({userID:user._id,user:user.name},"Anjali",{expiresIn:'7d'});
-                
-                    res.status(200).json({msg:"Login Succesfull", access_token});
-                }else{
-                    res.status(200).json({msg:"Wrong passwrod"});
+userRouter.post('/login', async (req, res) => {
+    const { email, pass } = req.body;
+    try {
+        const user = await UserModel.findOne({ email });
+
+        if (user) {
+            bcrypt.compare(pass, user.pass, async (err, result) => {
+                if (result) {
+                    try {
+                        const access_token =jwt.sign({ userID: user._id, user: user.name }, "Anjali");
+                        res.status(200).json({ msg: "Login Successful", user, access_token });
+                    } catch (jwtErr) {
+                        res.status(500).json({ msg: "Error creating token", error: jwtErr });
+                    }
+                } else {
+                    res.status(200).json({ msg: "Wrong password" });
                 }
-            })
-          }
+            });
+        } else {
+            res.status(200).json({ msg: "User not found" });
+        }
+    } catch (err) {
+        res.status(400).json({ msg: err });
     }
-    catch(err){
-        res.status(400).json({msg:err});
-    }
-})
+});
+
 
 
 // //logout
-// userRouter.get('/logout',async(req,res)=>{
-//     const access_token=req.headers.authorization?.split(" ")[1];
-//     try{
-//         const blacklist=new BlackListModel({access_token:access_token});
-//         await blacklist.save();
-//         res.status(200).json({msg:"Hey! user you are logout"});
-//     }
-//     catch(err){
-//         res.status(400).json({err:err});
-//     }
-// })
+userRouter.get('/logout',async(req,res)=>{
+    const access_token=req.headers.authorization?.split(" ")[1];
+    try{
+        const blacklist=new BlackListModel({access_token:access_token});
+        await blacklist.save();
+        res.status(200).json({msg:"Hey! user you are logout"});
+    }
+    catch(err){
+        res.status(400).json({err:err});
+    }
+})
 
 
 
