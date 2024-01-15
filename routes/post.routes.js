@@ -6,6 +6,7 @@ postRouter=express.Router();
 
 postRouter.use(auth);
 
+//get
 
 
 
