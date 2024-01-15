@@ -37,32 +37,26 @@ userRouter.post('/register',async(req,res)=>{
 
 
 //login
-userRouter.post('/login', async (req, res) => {
-    const { email, pass } = req.body;
-    try {
-        const user = await UserModel.findOne({ email });
+userRouter.post('/login',async(req,res)=>{
+ const {email,pass}=req.body;
+ try{
+    const user=await UserModel.findOne({email});
+    if(user){
+       bcrypt.compare(pass,user.pass,(err,result)=>{
+        if(result){
+            const access_token=jwt.sign({userID:user._id,user:user.name},"Anjali");
 
-        if (user) {
-            bcrypt.compare(pass, user.pass, async (err, result) => {
-                if (result) {
-                    try {
-                        const access_token =jwt.sign({ userID: user._id, user: user.name }, "Anjali");
-                        res.status(200).json({ msg: "Login Successful", user, access_token });
-                    } catch (jwtErr) {
-                        res.status(500).json({ msg: "Error creating token", error: jwtErr });
-                    }
-                } else {
-                    res.status(200).json({ msg: "Wrong password" });
-                }
-            });
-        } else {
-            res.status(200).json({ msg: "User not found" });
+            res.json({msg:"Longin successfull",user,access_token})
+        }else{
+            res.json({msg:"wrong email "})
         }
-    } catch (err) {
-        res.status(400).json({ msg: err });
+       })
     }
-});
-
+ }
+ catch(err){
+    res.json({err});
+ }
+})
 
 
 // //logout
