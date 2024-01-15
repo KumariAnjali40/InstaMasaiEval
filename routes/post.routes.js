@@ -50,7 +50,24 @@ postRouter.patch('/update/:postID',async(req,res)=>{
     }
  })
 
-
+//delete
+postRouter.delete('/delete/:postID',async(req,res)=>{
+    const {postID} = req.params;
+    try{
+       const post=await PostModel.findOne({_id:postID});
+       if(post.userID===req.body.userID){
+          await PostModel.findByIdAndDelete({_id:postID});
+          res.status(200).json({msg:"post has been deleted"});
+       }else{
+          res.status(200).json({msg:"your are not having permission"});
+       }
+    }
+    catch(err){
+       console.log(err);
+       res.status(400).json({err:err});
+    }
+ })
+ 
 
 
 module.exports={
