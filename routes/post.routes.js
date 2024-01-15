@@ -20,7 +20,16 @@ postRouter.post('/add',async(req,res)=>{
     }
 })
 
+postRouter.get('/posts',async(req,res)=>{
+    try{
+        const post=await PostModel.find({userID:req.body.userID});
 
+        res.status(200).json({post});
+      }
+      catch(err){
+         res.status(400).json({err});
+      }
+})
 
 
 
